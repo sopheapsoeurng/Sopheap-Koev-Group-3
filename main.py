@@ -5,10 +5,11 @@ root.geometry("700x600")
 frame=tk.Frame()
 frame.master.title("EATING CAKE")
 canvas=tk.Canvas(frame)
-robot=tk.PhotoImage(file="images/welcome.png")
+
 ## create background
 image=PhotoImage(file="images/welcome.png")
 images=PhotoImage(file="images/background.png")
+pic=PhotoImage(file="images/robot.png")
 picture=canvas.create_image(0,0,image=image,anchor="nw",tags="remove")
 
 ## dispayGrid
@@ -37,7 +38,8 @@ def drawGrid():
         if val==0:
             canvas.create_rectangle(x1,y1,x2,y2,fill="white",outline="")
         else:
-            canvas.create_rectangle(x1,y1,x2,y2,fill="green",outline="")
+            canvas.create_rectangle(x1,y1,x2,y2,fill="",outline="")
+            canvas.create_image(x1+25,y2-30,image=pic)
         x1+=50
         x2=x1+50 
 
