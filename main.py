@@ -10,10 +10,13 @@ canvas=tk.Canvas(frame)
 
 ## Array of Cake 
 arrayOfCake = []
-varrayOfDiamon = []
-
+arrayOfDiamon = []
+arrayOfboom=[]
 ## speedDuration
 speedDuration = 50
+WINDOW_WIDTH=700
+WINDOW_HEIHT=600
+CAKE_SIZE=LIFE_SIZE=BOOM_SIZE=DIAMOND_SIZE=30
 
 ## create background
 image=PhotoImage(file="images/welcome.png")
@@ -32,10 +35,11 @@ def toDispley():
     btn.place_forget()
     picture=canvas.create_image(0,0,image=images,anchor="nw",tags="remove")
     drawGrid()
-    # print("todisplay")
+    ## print("todisplay")
     addCake ()
     canvas.after(30000,lambda:addDiamon())
-    
+
+## add food
 def addCake ():
     global arrayOfCake
     cakeX = random.randrange(50,650)
@@ -47,6 +51,41 @@ def addDiamon ():
     diamonX = random.randrange(50,650)
     arrayOfCake.append(canvas.create_image(diamonX,-25,image=diamon,tags="item"))
     canvas.after(32000,lambda:addDiamon())
+def addBoom():
+    global arrayOfboom
+    boomX=random.randrange(50,650)
+    arrayOfboom.append(canvas.create_image(boomX,-25,image=boom,tags="item"))
+    canvas.after(600,lambda:addBoom())
+addBoom()
+
+#Removing element
+def romveElement(index):
+    cakeId=arrayOfCake[index]
+    canvas.delete(cakeId)
+    arrayOfCake.pop(index)
+
+
+# 1 remove the first if outside of the window
+firstCake =  arrayOfCake[0]
+coordsFirstCake=canvas.coords(firstCake)
+if coordsFirstCake[1]>WINDOW_HEIHT - CAKE_SIZE:
+    romveElement(0)
+
+# find the index of element to remove
+def findCakeIndexat(postX, postY):
+    for i in range(len(arrayOfCake)):
+        cordCake=canvas.coords(arrayOfCake[i])
+        cakeX=cordCake[0]
+        cakeY=cordCake[1]
+        if cakeX+15 >postX-45 and cakeX-15 <postX+45 and cakeY+15 >postY-45 and cakeY-15<postY+45:
+            return i
+        return-1 #no cake found
+    cakeIndexAtPlayer=findCakeIndexat(getPlayerX(),getPlayerY())
+    if cakeIndexAtPlayer!=-1:
+        moveitems(cakeIndexAtPlayer)
+
+
+
     
 
 ## text welcome
@@ -61,8 +100,6 @@ grid=[0,0,0,0,0,0,1,0,0,0,0,0,0,0]
 def drawGrid():
     ## create text of score
     canvas.create_text(600,50,text="Score : 0",font=("Purisa",16),fill="white")
-    ## create sound
-    # winsound.PlaySound("sound\mixkit.wav",winsound.SND_FILENAME)
     x1=0
     x2=50
     y1=550
@@ -71,12 +108,10 @@ def drawGrid():
         if val==0:
             canvas.create_rectangle(x1,y1,x2,y2,fill="",outline="")
         else:
-            canvas.create_rectangle(x1,y1,x2,y2,fill="",outline="")
-            canvas.create_image(x1+25,y2-30,image=pic)
+            canvas.create_rectangle(x1,y1,x2,y2,fill=None,outline="")
+            canvas.create_image(x1+25,y2-30,image=pic,tags="bird")
         x1+=50
         x2=x1+50 
-
-## count score
 
 ## move animation
 def moveitems():
@@ -94,6 +129,8 @@ def moveLeft(event):
             istrue=True
             grid[i]=0
             grid[i-1]=1
+            canvas.coords("bird")
+            canvas.delete("bird")
     drawGrid()
 root.bind("<l>", moveLeft)
 root.bind("<Left>", moveLeft)
@@ -105,6 +142,8 @@ def moveRight(event):
             istrue=False
             grid[i]=0
             grid[i+1]=1
+            canvas.coords("bird")
+            canvas.delete("bird")
     drawGrid()
 root.bind("<r>", moveRight)
 root.bind("<Right>", moveRight)
